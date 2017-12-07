@@ -27,4 +27,16 @@ node {
         sh "docker login -u '${env.DOCKERHUB_USERNAME}' -p '${env.DOCKERHUB_PASSWORD}' -e lukas.schmyrczyk@lionmint.com"
         sh "docker push lionmint/dcos-nuremberg-meetup:${gitCommit()}"
     }
+
+    // Deploy
+    stage 'Deploy'
+
+    marathon(
+        url: 'http://marathon.mesos:8080',
+        forceUpdate: false,
+        filename: 'marathon.json',
+        appid: 'nginx-test',
+        docker: "lionmint/dcos-nuremberg-meetup:${gitCommit()}".toString()
+    )
+
 }
